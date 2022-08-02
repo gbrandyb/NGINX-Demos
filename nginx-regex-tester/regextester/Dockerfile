@@ -20,5 +20,6 @@ COPY unitphp.config /srv
 RUN ln -sf /dev/stderr /var/log/unit.log
 
 EXPOSE 80 8000 9000 9080
-
-CMD ["/usr/local/sbin/start.sh"]
+RUN /usr/local/sbin/start.sh
+#CMD ["/usr/local/sbin/start.sh"]
+CMD ["tail -f /dev/null"]
