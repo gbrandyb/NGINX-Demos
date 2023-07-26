@@ -16,12 +16,16 @@ resource "aws_iam_role" "main" {
 }
 EOF
 
+  tags = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }
 
 # Create AWS IAM role policy for AWS NGINX autoscaling tool
 resource "aws_iam_role_policy" "main" {
-  name = "aws-nlb-iam-policy"
-  role = aws_iam_role.main.id
+  name   = "aws-nlb-iam-policy"
+  role   = aws_iam_role.main.id
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -59,4 +63,8 @@ EOF
 resource "aws_iam_instance_profile" "main" {
   name = "aws-nlb-iam-instance-profile"
   role = aws_iam_role.main.name
+  tags = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }

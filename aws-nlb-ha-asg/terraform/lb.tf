@@ -5,6 +5,10 @@ resource "aws_lb" "main" {
   subnets = [
     aws_subnet.main.id,
   ]
+  tags = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }
 
 # Create AWS NLB target group
@@ -13,6 +17,10 @@ resource "aws_lb_target_group" "main" {
   port     = 80
   protocol = "TCP"
   vpc_id   = aws_vpc.main.id
+  tags = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }
 
 # Create AWS NLB listener
