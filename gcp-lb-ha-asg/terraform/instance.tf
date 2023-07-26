@@ -62,12 +62,16 @@ EOF
   lifecycle {
     create_before_destroy = true
   }
+  labels = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }
 
 # Create a Google compute instance template for the NGINX app one
 resource "google_compute_instance_template" "app_one" {
-  name = "ngx-oss-app-one-instance-template"
-  description = "Open source NGINX app one instance template"
+  name         = "ngx-oss-app-one-instance-template"
+  description  = "Open source NGINX app one instance template"
   machine_type = var.machine_type
   tags = [
     "ngx-http-fw-rule",
@@ -107,7 +111,7 @@ for (( i=0; i < $${#arrlb[@]}; i++ )); do
 done;
 EOF
 
-shutdown-script = <<EOF
+    shutdown-script = <<EOF
 inip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1');
 gcloud compute instances list --format="value(networkInterfaces[0].accessConfigs[0].natIP)" --filter="name~'.*lb.*'" | while read -r lb; do
   for ID in $(curl -s 'http://'"$lb"':8080/api/4/http/upstreams/app_one/servers' | grep -o '"id":[0-9]\+,"server":"'"$inip"':80"' | grep -o '"id":[0-9]\+' | grep -o '[0-9]\+'); do
@@ -117,35 +121,39 @@ gcloud compute instances list --format="value(networkInterfaces[0].accessConfigs
 done;
 EOF
 
-}
-lifecycle {
-create_before_destroy = true
-}
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+  labels = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }
 
 # Create a Google compute instance template for the NGINX app two
 resource "google_compute_instance_template" "app_two" {
-name = "ngx-oss-app-two-instance-template"
-description = "Open source NGINX app two instance template"
-machine_type = var.machine_type
-tags = [
-"ngx-http-fw-rule",
-]
-disk {
-source_image = "ngx-oss"
-}
-network_interface {
-network = "default"
-access_config {
-}
-}
-service_account {
-scopes = [
-"https://www.googleapis.com/auth/compute",
-]
-}
-metadata = {
-startup-script = <<EOF
+  name         = "ngx-oss-app-two-instance-template"
+  description  = "Open source NGINX app two instance template"
+  machine_type = var.machine_type
+  tags = [
+    "ngx-http-fw-rule",
+  ]
+  disk {
+    source_image = "ngx-oss"
+  }
+  network_interface {
+    network = "default"
+    access_config {
+    }
+  }
+  service_account {
+    scopes = [
+      "https://www.googleapis.com/auth/compute",
+    ]
+  }
+  metadata = {
+    startup-script = <<EOF
 inip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1');
 lbip=$(gcloud compute instances list --format="value(networkInterfaces[0].accessConfigs[0].natIP)" --filter="name~'.*lb.*'")
 arrlb=($lbip)
@@ -180,16 +188,20 @@ EOF
   lifecycle {
     create_before_destroy = true
   }
+  labels = {
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
+  }
 }
 
 # Configure a Google compute instance group manager for the NGINX Plus load balancer
 resource "google_compute_instance_group_manager" "lb" {
-  provider = google-beta
-  name = "ngx-plus-lb-instance-group"
-  description = "Instance group to host NGINX Plus load balancing instances"
+  provider           = google-beta
+  name               = "ngx-plus-lb-instance-group"
+  description        = "Instance group to host NGINX Plus load balancing instances"
   base_instance_name = "nginx-plus-lb-instance-group"
   version {
-    name = "ngx-plus-lb-instance-group"
+    name              = "ngx-plus-lb-instance-group"
     instance_template = google_compute_instance_template.lb.self_link
   }
   zone = var.region_zone
@@ -197,41 +209,41 @@ resource "google_compute_instance_group_manager" "lb" {
     google_compute_target_pool.default.self_link,
   ]
   auto_healing_policies {
-    health_check = google_compute_http_health_check.default.self_link
+    health_check      = google_compute_http_health_check.default.self_link
     initial_delay_sec = 300
   }
 }
 
 # Configure a Google compute instance group manager for the NGINX app 1
 resource "google_compute_instance_group_manager" "app_one" {
-  provider = google-beta
-  name = "ngx-oss-app-one-instance-group"
-  description = "Instance group to host open source NGINX app one instances"
+  provider           = google-beta
+  name               = "ngx-oss-app-one-instance-group"
+  description        = "Instance group to host open source NGINX app one instances"
   base_instance_name = "nginx-oss-app-one-instance-group"
   version {
-    name = "ngx-oss-app-one-instance-group"
+    name              = "ngx-oss-app-one-instance-group"
     instance_template = google_compute_instance_template.app_one.self_link
   }
   zone = var.region_zone
   auto_healing_policies {
-    health_check = google_compute_http_health_check.default.self_link
+    health_check      = google_compute_http_health_check.default.self_link
     initial_delay_sec = 300
   }
 }
 
 # Configure a Google compute instance group manager for the NGINX app 2
 resource "google_compute_instance_group_manager" "app_two" {
-  provider = google-beta
-  name = "ngx-oss-app-two-instance-group"
-  description = "Instance group to host open source NGINX app two instances"
+  provider           = google-beta
+  name               = "ngx-oss-app-two-instance-group"
+  description        = "Instance group to host open source NGINX app two instances"
   base_instance_name = "nginx-oss-app-two-instance-group"
   version {
-    name = "ngx-oss-app-two-instance-group"
+    name              = "ngx-oss-app-two-instance-group"
     instance_template = google_compute_instance_template.app_two.self_link
   }
   zone = var.region_zone
   auto_healing_policies {
-    health_check = google_compute_http_health_check.default.self_link
+    health_check      = google_compute_http_health_check.default.self_link
     initial_delay_sec = 300
   }
 }

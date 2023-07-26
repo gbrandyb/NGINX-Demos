@@ -3,7 +3,9 @@ resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   tags = {
-    Name = "aws-nlb-vpc"
+    Name     = "aws-nlb-vpc"
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
   }
 }
 
@@ -13,7 +15,9 @@ resource "aws_subnet" "main" {
   cidr_block              = "10.0.0.0/24"
   map_public_ip_on_launch = true
   tags = {
-    Name = "aws-nlb-subnet"
+    Name     = "aws-nlb-subnet"
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
   }
 }
 
@@ -23,7 +27,9 @@ resource "aws_security_group" "main" {
   description = "Security group for AWS NLB"
   vpc_id      = aws_vpc.main.id
   tags = {
-    Name = "aws-nlb-sec-grp"
+    Name     = "aws-nlb-sec-grp"
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
   }
   ingress {
     from_port = 80
@@ -63,7 +69,9 @@ resource "aws_security_group" "main" {
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "aws-nlb-gtwy"
+    Name     = "aws-nlb-gtwy"
+    git_org  = "gbrandyb"
+    git_repo = "NGINX-Demos"
   }
 }
 
